@@ -1,0 +1,68 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "ミナモ精工 採用サイト（WordPress → microCMS 移行デモ）",
+		"description": "移行元となるWordPressサイト。SCFによるカスタムフィールド、カスタム投稿タイプ、オプションページ、デモ記事を含みます。",
+		"author": "nakanohiroko"
+	},
+	"landingPage": "/wp-admin/",
+	"preferredVersions": {
+		"php": "8.3",
+		"wp": "latest"
+	},
+	"features": {
+		"networking": true
+	},
+	"login": true,
+	"steps": [
+		{
+			"step": "setSiteLanguage",
+			"language": "ja"
+		},
+		{
+			"step": "setSiteOptions",
+			"options": {
+				"blogname": "ミナモ精工 採用サイト",
+				"blogdescription": "見えないところで、世界を支える。",
+				"timezone_string": "Asia/Tokyo",
+				"date_format": "Y.m.d",
+				"time_format": "H:i"
+			}
+		},
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "wordpress.org/plugins",
+				"slug": "secure-custom-fields"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/mu-plugins/minamo-recruit.php",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/nakanohiroko/wordpress-to-microcms-demo/main/wordpress/mu-plugins/minamo-recruit.php"
+			}
+		},
+		{
+			"step": "writeFiles",
+			"writeToPath": "/tmp/minamo-seed",
+			"filesTree": {
+				"resource": "git:directory",
+				"url": "https://github.com/nakanohiroko/wordpress-to-microcms-demo",
+				"ref": "main",
+				"path": "wordpress/seed"
+			}
+		},
+		{
+			"step": "runPHP",
+			"progress": {
+				"caption": "デモデータを投入しています"
+			},
+			"code": "<?php require_once '/wordpress/wp-load.php'; require '/tmp/minamo-seed/seed.php';"
+		}
+	]
+}
