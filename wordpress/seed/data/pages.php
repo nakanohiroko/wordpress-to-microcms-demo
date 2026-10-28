@@ -21,7 +21,7 @@ return array(
 <tr><th style="width:30%">社名</th><td>株式会社ミナモ精工（MINAMO SEIKO Co., Ltd.）</td></tr>
 <tr><th>設立</th><td>1978年4月</td></tr>
 <tr><th>資本金</th><td>4億8,000万円</td></tr>
-<tr><th>代表者</th><td>代表取締役社長　マイクロ 太郎</td></tr>
+<tr><th>代表者</th><td>代表取締役社長　水野 浩一</td></tr>
 <tr><th>従業員数</th><td>812名（2026年4月時点）</td></tr>
 <tr><th>売上高</th><td>214億円（2025年度）</td></tr>
 <tr><th>事業内容</th><td>産業用センサー、精密部品の研究開発・製造・販売</td></tr>
