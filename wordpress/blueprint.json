@@ -63,6 +63,27 @@
 				"caption": "デモデータを投入しています"
 			},
 			"code": "<?php require_once '/wordpress/wp-load.php'; require '/tmp/minamo-seed/seed.php';"
+		},
+		{
+			"step": "writeFiles",
+			"writeToPath": "/wordpress/wp-content/themes/minamo-recruit",
+			"filesTree": {
+				"resource": "git:directory",
+				"url": "https://github.com/nakanohiroko/wordpress-to-microcms-demo",
+				"ref": "main",
+				"path": "wordpress/themes/minamo-recruit"
+			}
+		},
+		{
+			"step": "activateTheme",
+			"themeName": "minamo-recruit"
+		},
+		{
+			"step": "runPHP",
+			"progress": {
+				"caption": "フロントページを設定しています"
+			},
+			"code": "<?php require_once '/wordpress/wp-load.php'; $news_id = wp_insert_post(['post_type'=>'page','post_title'=>'お知らせ・ブログ','post_name'=>'news-archive','post_status'=>'publish','post_content'=>'']); $home_id = wp_insert_post(['post_type'=>'page','post_title'=>'ホーム','post_name'=>'home-top','post_status'=>'publish','post_content'=>'']); update_option('show_on_front','page'); update_option('page_on_front',$home_id); update_option('page_for_posts',$news_id); flush_rewrite_rules(false);"
 		}
 	]
 }
