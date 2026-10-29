@@ -16,9 +16,10 @@ cp -r "$WP_DIR/themes/minamo-recruit" "$SITE_DIR/minamo-source/theme"
 cp    "$WP_DIR/mu-plugins/minamo-recruit.php" "$SITE_DIR/minamo-source/"
 cp -r "$WP_DIR/seed/." "$SITE_DIR/minamo-source/seed/"
 
-echo "▶ SCFをダウンロードしています..."
+echo "▶ SCFをダウンロード・展開しています..."
 curl -fL "https://downloads.wordpress.org/plugin/secure-custom-fields.latest-stable.zip" \
   -o "$SITE_DIR/minamo-source/scf.zip"
+unzip -q "$SITE_DIR/minamo-source/scf.zip" -d "$SITE_DIR/minamo-source/scf-plugin"
 
 echo "▶ WordPress Playground を起動しています（初回は数分かかります）..."
 cd "$REPO_ROOT"

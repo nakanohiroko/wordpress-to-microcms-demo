@@ -37,17 +37,17 @@
 		{
 			"step": "runPHP",
 			"progress": { "caption": "SCFをインストールしています" },
-			"code": "<?php require_once '/wordpress/wp-load.php'; require_once ABSPATH.'wp-admin/includes/plugin.php'; require_once ABSPATH.'wp-admin/includes/file.php'; $zip='/wordpress/minamo-source/scf.zip'; if(!file_exists($zip)){exit('scf.zip が見つかりません。start.sh を使って起動してください。');} $r=unzip_file($zip,WP_PLUGIN_DIR); if(is_wp_error($r)){exit('SCF展開失敗: '.$r->get_error_message());} $a=activate_plugin('secure-custom-fields/secure-custom-fields.php'); if(is_wp_error($a)){exit('SCF有効化失敗: '.$a->get_error_message());} echo 'SCF installed and activated.'.PHP_EOL;"
+			"code": "<?php require_once '/wordpress/wp-load.php'; require_once ABSPATH.'wp-admin/includes/plugin.php'; $src='/wordpress/minamo-source/scf-plugin/secure-custom-fields'; if(!is_dir($src)){exit('SCFプラグインが見つかりません。start.sh で起動してください。');} $dst=WP_PLUGIN_DIR.'/secure-custom-fields'; @mkdir($dst,0755,true); $it=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($src,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::SELF_FIRST); foreach($it as $f){$d=str_replace($src,$dst,(string)$f); if($f->isDir()){@mkdir($d,0755,true);}else{copy((string)$f,$d);}} $a=activate_plugin('secure-custom-fields/secure-custom-fields.php'); if(is_wp_error($a)){exit('SCF有効化失敗: '.$a->get_error_message());} echo 'SCF installed and activated.'.PHP_EOL;"
 		},
 		{
 			"step": "runPHP",
 			"progress": { "caption": "デモデータを投入しています" },
-			"code": "<?php require_once '/wordpress/wp-load.php'; require '/wordpress/minamo-source/seed/seed.php';"
+			"code": "<?php error_reporting(E_ALL); ini_set('display_errors','1'); require_once '/wordpress/wp-load.php'; require '/wordpress/minamo-source/seed/seed.php';"
 		},
 		{
 			"step": "runPHP",
 			"progress": { "caption": "テーマを有効化しています" },
-			"code": "<?php require_once '/wordpress/wp-load.php'; switch_theme('minamo-recruit'); echo 'Theme: '.get_option('stylesheet').PHP_EOL;"
+			"code": "<?php require_once '/wordpress/wp-load.php'; update_option('template','minamo-recruit'); update_option('stylesheet','minamo-recruit'); update_option('current_theme','ミナモ精工 採用サイト'); delete_site_transient('update_themes'); wp_clear_scheduled_hook('wp_update_themes'); echo 'Theme set: '.get_option('stylesheet').PHP_EOL;"
 		},
 		{
 			"step": "runPHP",
