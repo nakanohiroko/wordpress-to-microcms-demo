@@ -5,7 +5,7 @@
 		"description": "移行元となるWordPressサイト。SCFによるカスタムフィールド、カスタム投稿タイプ、オプションページ、デモ記事を含みます。",
 		"author": "nakanohiroko"
 	},
-	"landingPage": "/wp-admin/",
+	"landingPage": "/",
 	"preferredVersions": {
 		"php": "8.3",
 		"wp": "latest"
@@ -30,60 +30,29 @@
 			}
 		},
 		{
-			"step": "installPlugin",
-			"pluginData": {
-				"resource": "wordpress.org/plugins",
-				"slug": "secure-custom-fields"
-			},
-			"options": {
-				"activate": true
-			}
-		},
-		{
-			"step": "writeFile",
-			"path": "/wordpress/wp-content/mu-plugins/minamo-recruit.php",
-			"data": {
-				"resource": "url",
-				"url": "https://raw.githubusercontent.com/nakanohiroko/wordpress-to-microcms-demo/main/wordpress/mu-plugins/minamo-recruit.php"
-			}
-		},
-		{
-			"step": "writeFiles",
-			"writeToPath": "/tmp/minamo-seed",
-			"filesTree": {
-				"resource": "git:directory",
-				"url": "https://github.com/nakanohiroko/wordpress-to-microcms-demo",
-				"ref": "main",
-				"path": "wordpress/seed"
-			}
+			"step": "runPHP",
+			"progress": { "caption": "ファイルを配置しています" },
+			"code": "<?php $src='/wordpress/minamo-source'; if(!is_dir($src)){exit('minamo-source が見つかりません。wordpress/start.sh で起動してください。');} @mkdir('/wordpress/wp-content/mu-plugins',0755,true); copy($src.'/minamo-recruit.php','/wordpress/wp-content/mu-plugins/minamo-recruit.php'); $td='/wordpress/wp-content/themes/minamo-recruit'; @mkdir($td,0755,true); $it=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($src.'/theme',FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::SELF_FIRST); foreach($it as $f){$d=str_replace($src.'/theme',$td,(string)$f); if($f->isDir()){@mkdir($d,0755,true);}else{copy((string)$f,$d);}} echo 'Files placed.'.PHP_EOL;"
 		},
 		{
 			"step": "runPHP",
-			"progress": {
-				"caption": "デモデータを投入しています"
-			},
-			"code": "<?php require_once '/wordpress/wp-load.php'; require '/tmp/minamo-seed/seed.php';"
-		},
-		{
-			"step": "writeFiles",
-			"writeToPath": "/wordpress/wp-content/themes/minamo-recruit",
-			"filesTree": {
-				"resource": "git:directory",
-				"url": "https://github.com/nakanohiroko/wordpress-to-microcms-demo",
-				"ref": "main",
-				"path": "wordpress/themes/minamo-recruit"
-			}
-		},
-		{
-			"step": "activateTheme",
-			"themeName": "minamo-recruit"
+			"progress": { "caption": "SCFをインストールしています" },
+			"code": "<?php require_once '/wordpress/wp-load.php'; require_once ABSPATH.'wp-admin/includes/plugin.php'; require_once ABSPATH.'wp-admin/includes/file.php'; $zip='/wordpress/minamo-source/scf.zip'; if(!file_exists($zip)){exit('scf.zip が見つかりません。start.sh を使って起動してください。');} $r=unzip_file($zip,WP_PLUGIN_DIR); if(is_wp_error($r)){exit('SCF展開失敗: '.$r->get_error_message());} $a=activate_plugin('secure-custom-fields/secure-custom-fields.php'); if(is_wp_error($a)){exit('SCF有効化失敗: '.$a->get_error_message());} echo 'SCF installed and activated.'.PHP_EOL;"
 		},
 		{
 			"step": "runPHP",
-			"progress": {
-				"caption": "フロントページを設定しています"
-			},
-			"code": "<?php require_once '/wordpress/wp-load.php'; $news_id = wp_insert_post(['post_type'=>'page','post_title'=>'お知らせ・ブログ','post_name'=>'news-archive','post_status'=>'publish','post_content'=>'']); $home_id = wp_insert_post(['post_type'=>'page','post_title'=>'ホーム','post_name'=>'home-top','post_status'=>'publish','post_content'=>'']); update_option('show_on_front','page'); update_option('page_on_front',$home_id); update_option('page_for_posts',$news_id); flush_rewrite_rules(false);"
+			"progress": { "caption": "デモデータを投入しています" },
+			"code": "<?php require_once '/wordpress/wp-load.php'; require '/wordpress/minamo-source/seed/seed.php';"
+		},
+		{
+			"step": "runPHP",
+			"progress": { "caption": "テーマを有効化しています" },
+			"code": "<?php require_once '/wordpress/wp-load.php'; switch_theme('minamo-recruit'); echo 'Theme: '.get_option('stylesheet').PHP_EOL;"
+		},
+		{
+			"step": "runPHP",
+			"progress": { "caption": "フロントページを設定しています" },
+			"code": "<?php require_once '/wordpress/wp-load.php'; $news_id=wp_insert_post(['post_type'=>'page','post_title'=>'お知らせ・ブログ','post_name'=>'news-archive','post_status'=>'publish','post_content'=>'']); $home_id=wp_insert_post(['post_type'=>'page','post_title'=>'ホーム','post_name'=>'home-top','post_status'=>'publish','post_content'=>'']); update_option('show_on_front','page'); update_option('page_on_front',$home_id); update_option('page_for_posts',$news_id); flush_rewrite_rules(false); echo 'Front page configured.'.PHP_EOL;"
 		}
 	]
 }
